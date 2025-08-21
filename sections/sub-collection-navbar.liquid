@@ -1,0 +1,223 @@
+
+{% if collection.metafields.custom.sub_collections.value %}
+{{ 'component-accordion.css' | asset_url | stylesheet_tag }}
+{{ 'collapsible-content.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+
+  .custom-collection-slider .slider-counter {
+    display: none;
+  }
+  .custom-collection-slider .slider-button,
+  .collection .slider-button {
+    position: absolute;
+    top: 45%;
+    text-align: center;
+    vertical-align: middle;
+    z-index: 999;
+    background: black;
+    color: white;
+    border-radius: 50%;
+    
+  }
+  .custom-collection-slider .slider-button[disabled] .icon,
+  .custom-collection-slider .slider-button:not([disabled]):hover {
+    color: white !important;
+  }
+  .custom-collection-slider .slider-button svg {
+    width: 100%;
+    height: 100%;
+  }
+  .custom-collection-slider .slider-button.slider-button--next,
+  .collection .slider-button.slider-button--next {
+    right: 0;
+  }
+  .custom-slider-desktop-li:first-child {
+    margin-left: 0 !important;
+  }
+
+  .custom-collection-slider .card__content {
+    position: absolute;
+    text-align: center;
+    vertical-align: middle;
+    height: -webkit-fill-available;
+    align-items: center;
+  }
+  .custom-collection-slider .card__inner .card__content {
+    position: unset;
+    top: unset;
+    background: black;
+    opacity: {{ section.settings.image_overlay_opacity | divided_by: 100.0 }};
+  }
+  {% if section.settings.content_alignment == 'center' %}
+    .title-wrapper-with-link {
+      justify-content: center;
+    }
+  {% endif %}
+  .custom-collection-slider .card__heading .icon-wrap {
+    display: none;
+  }
+  .custom-collection-slider .card__content .card__heading a {
+    font-size: 25px;
+    text-transform: uppercase;
+    color: white;
+    font-weight: 600;
+  }
+  .card:hover .media.media--hover-effect>img:first-child:only-child {
+    transform: scale(1.09);
+  }
+  
+  /* Mobil için düzenlemeler */
+  @media screen and (max-width: 749px) {
+    .collection-list-title {
+      font-size: 1.5rem !important;
+      line-height: 1.3;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      hyphens: auto;
+    }
+    
+    .custom-collection-slider .card__content .card__heading a {
+      font-size: 18px;
+      line-height: 1.2;
+    }
+    
+    .title-wrapper-with-link {
+      text-align: center;
+      padding: 0 15px;
+    }
+  }
+  
+{%- endstyle -%}
+
+<div class="custom-collection-slider color-{{ section.settings.color_scheme }} gradient">
+  <div class="collection-list-wrapper page-width isolate section-{{ section.id }}-padding">
+    {%- unless section.settings.title == blank -%}
+      <div class="title-wrapper-with-link title-wrapper--self-padded-mobile title-wrapper--no-top-margin">
+        <h2
+          id="SectionHeading-{{ section.id }}"
+          class="collection-list-title inline-richtext {{ section.settings.heading_size }}"
+        >
+        </h2>
+      </div>
+    {%- endunless -%}
+
+    <slider-component class="slider-mobile-gutter slider-component-desktop">
+
+      <ul
+        class="slider slider--desktop collection-list contains-card contains-card--collection grid grid--{{ section.settings.columns_desktop }}-col-desktop grid--{{ section.settings.columns_mobile }}-col-tablet-down slider slider--tablet grid--peek"
+        id="Slider-{{ section.id }}"
+        role="list"
+      >
+        {%- assign collection_list = collection.metafields.custom.sub_collections.value -%}
+
+        {%- for col in collection_list -%}
+          <li
+            id="Slide-{{ section.id }}-{{ forloop.index }}"
+            class="custom-slider-desktop-li collection-list__item grid__item slider__slide"
+          >
+            {%- render 'card-collection',
+              card_collection: col,
+              media_aspect_ratio: section.settings.image_ratio,
+              columns: section.settings.columns_desktop,
+              placeholder_image: 'collection-apparel-1'
+            -%}
+          </li>
+        {%- endfor -%}
+      </ul>
+          
+  
+    </slider-component>
+  </div>
+</div>
+ {% endif %}
+{% schema %}
+{
+  "name": "Collection Sub-Nav Item",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Section heading",
+      "default": "Sub Collections"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Heading size",
+      "options": [
+        { "value": "h2", "label": "H2" },
+        { "value": "h1", "label": "H1" },
+        { "value": "h0", "label": "H0" }
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "select",
+      "id": "heading_alignment",
+      "label": "Heading alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "row", "label": "Row" },
+        { "value": "section", "label": "Section" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "color_scheme",
+      "id": "container_color_scheme",
+      "label": "Container color scheme",
+      "default": "scheme-2"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Section color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0, "max": 100, "step": 4, "unit": "px",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0, "max": 100, "step": 4, "unit": "px",
+      "default": 36
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection Sub-Nav Item"
+    }
+  ]
+}
+{% endschema %}

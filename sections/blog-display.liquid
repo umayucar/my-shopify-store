@@ -1,0 +1,206 @@
+{% if metaobjects.related_blogs.values %}
+{{ 'component-accordion.css' | asset_url | stylesheet_tag }}
+{{ 'collapsible-content.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+
+  /* Blog listesi stilleri - ALT ALTA GÖSTERİM */
+  .blog-list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 40px; /* Kartlar arası boşluk */
+    margin-top: 30px;
+  }
+  
+  .blog-card {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    padding: 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background: #fff;
+    text-decoration: none; /* Tüm karta link özelliği ekler */
+    color: inherit; /* Yazı rengini korur */
+  }
+  
+  .blog-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    text-decoration: none; /* Link alt çizgisini kaldırır */
+    color: inherit; /* Yazı rengini korur */
+  }
+  
+  .blog-card-image {
+    flex: 0 0 300px;
+    height: 200px;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .blog-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s ease;
+  }
+  
+  .blog-card:hover .blog-card-image img {
+    transform: scale(1.05);
+  }
+  
+  .blog-card-content {
+    flex: 1;
+    padding: 25px;
+  }
+  
+  .blog-card-title {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+  }
+  
+  .blog-card-excerpt {
+    margin-bottom: 20px;
+    color: #666;
+    line-height: 1.6;
+    font-size: 16px;
+  }
+  
+  /* Buton yerine tüm kartı link yaptığımız için buton stilini kaldırdık */
+  
+  /* Mobil görünüm */
+  @media (max-width: 768px) {
+    .blog-card {
+      flex-direction: column;
+      gap: 0;
+    }
+    
+    .blog-card-image {
+      flex: 0 0 auto;
+      width: 100%;
+      height: 200px;
+    }
+    
+    .blog-card-content {
+      padding: 20px;
+    }
+    
+    .blog-card-title {
+      font-size: 20px;
+    }
+    
+    .blog-card-excerpt {
+      font-size: 14px;
+    }
+  }
+{%- endstyle -%}
+
+<div class="custom-collection-slider color-{{ section.settings.color_scheme }} gradient">
+  <div class="collection-list-wrapper page-width isolate section-{{ section.id }}-padding">
+
+    {%- assign collection_list = metaobjects.related_blogs.values -%}
+
+    {% if collection_list %}
+      <div class="blog-list-container">
+        {%- for blog in collection_list -%}
+          {%- capture blog_url -%}
+            https://umay-test.myshopify.com{{ blog.system.url }}
+          {%- endcapture -%}
+          
+          <a href="{{ blog_url | strip }}" class="blog-card">
+            {% if blog.image %}
+              <div class="blog-card-image">
+                <img 
+                  src="{{ blog.image | img_url: '600x400', crop: 'center' }}" 
+                  width="600" 
+                  height="400" 
+                  alt="{{ blog.title }}"
+                  loading="lazy"
+                >
+              </div>
+            {% endif %}
+            <div class="blog-card-content">
+              <h3 class="blog-card-title">{{ blog.title }}</h3>
+              <div class="blog-card-excerpt">
+                {{ blog.excerptt | strip_html | truncatewords: 50 }}
+              </div>
+            </div>
+          </a>
+        {%- endfor -%}
+      </div>
+    {% else %}
+      <p>No related blog posts found.</p>
+    {% endif %}
+  </div>
+</div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "All Blogs Vertical",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "label": "Section heading",
+      "default": "All Blog Posts"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Heading size",
+      "options": [
+        { "value": "h2", "label": "H2" },
+        { "value": "h1", "label": "H1" },
+        { "value": "h0", "label": "H0" }
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Section color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0, "max": 100, "step": 4, "unit": "px",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0, "max": 100, "step": 4, "unit": "px",
+      "default": 36
+    }
+  ],
+  "presets": [
+    {
+      "name": "All Blogs Vertical"
+    }
+  ]
+}
+{% endschema %}
