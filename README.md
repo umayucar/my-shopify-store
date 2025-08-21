@@ -1,7 +1,5 @@
 # my-shopify-store
 
-# shopify-store
-
 ### 1. Sub-Collection Navigation
 Developed a horizontally scrollable navigation bar with buttons that smoothly navigate left and right on swipe.
 Used Shopify metafields to define and control navigation items dynamically. 
